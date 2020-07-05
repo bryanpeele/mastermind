@@ -1,0 +1,3 @@
+add_executable(code_util_test code_util_test.cpp)
+target_link_libraries(code_util_test core gtest gtest_main)
+gtest_add_tests(TARGET code_util_test)
