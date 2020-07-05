@@ -30,6 +30,19 @@ TEST(CodeUtil, GenerateAllCodes) {
   // }
 }
 
+TEST(CodeUtil, GenerateAllCodesNoRepeat) {
+  constexpr int num_digits = 3;
+  constexpr int num_colors = 4;
+  constexpr bool allow_repeats = false;
+  const auto codes = GenerateAllCodes<num_digits, num_colors>(allow_repeats);
+
+  // TODO(bpeele) add real test..
+  std::cout << "Num codes: " << codes.size() << std::endl;
+  for (const auto &code : codes) {
+    std::cout << "  " << code << std::endl;
+  }
+}
+
 TEST(CodeUtil, GenerateAllPegs) {
   constexpr int num_digits = 3;
   const auto pegs = GenerateAllPegOutputs(num_digits);

@@ -24,6 +24,17 @@ TEST(Solver, Solve) {
   solver.AutomatedGameplay(solution, true);
 }
 
+TEST(Solver, SolveNoRepetition) {
+  constexpr int num_digits = 4;
+  constexpr int num_colors = 6;
+
+  const auto solution = Code<num_digits, num_colors>({5, 2, 3, 1});
+
+  auto solver = Solver<num_digits, num_colors>(false);
+
+  solver.AutomatedGameplay(solution, true);
+}
+
 TEST(Solver, Solve2) {
   constexpr int num_digits = 4;
   constexpr int num_colors = 8;

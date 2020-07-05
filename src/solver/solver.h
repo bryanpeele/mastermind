@@ -9,9 +9,15 @@
 template <int NUM_DIGITS, int NUM_COLORS>
 class Solver {
  public:
-  Solver() : all_peg_outputs_(GenerateAllPegOutputs(NUM_DIGITS)),
-             possible_guesses_(GenerateAllCodes<NUM_DIGITS, NUM_COLORS>(true)) {
-    for (const auto &code : possible_guesses_) possible_solutions_.emplace_back(code);
+  Solver(bool allow_repetitions = true)
+      : all_peg_outputs_(GenerateAllPegOutputs(NUM_DIGITS)),
+        possible_guesses_(GenerateAllCodes<NUM_DIGITS, NUM_COLORS>(true)) {
+    // Note possible guesses ALWAYS allow repition, but possible solutions may OR may not include
+    // repetitions.
+    const auto possible_solutions = allow_repetitions ? possible_guesses_ :
+                                    GenerateAllCodes<NUM_DIGITS, NUM_COLORS>(false);
+    // Convert vector to list.
+    for (const auto &code : possible_solutions) possible_solutions_.emplace_back(code);
   }
 
   Code<NUM_DIGITS, NUM_COLORS> InitialGuess() {
@@ -120,8 +126,22 @@ class Solver {
     for (const auto &guess : possible_guesses_) {
       int min_eliminated = std::numeric_limits<int>::max();
       for (const auto &pegs : all_peg_outputs_) {
-          int num_eliminated = PotentialElimination(guess, pegs.first, pegs.second);
-          min_eliminated = std::min(min_eliminated, num_eliminated);
+        int num_eliminated = PotentialElimination(guess, pegs.first, pegs.second);
+        min_eliminated = std::min(min_eliminated, num_eliminated);
+      }
+      if (min_eliminated >= max_min_eliminated) {
+        max_min_eliminated = min_eliminated;
+        best_guess = std::make_unique<Code<NUM_DIGITS, NUM_COLORS>>(guess);
+      }
+    }
+
+    // TODO(bpeele) hack, DRY, efficiency, etc....this is a shitty way to force tie to go to
+    // possible solution
+    for (const auto &guess : possible_solutions_) {
+      int min_eliminated = std::numeric_limits<int>::max();
+      for (const auto &pegs : all_peg_outputs_) {
+        int num_eliminated = PotentialElimination(guess, pegs.first, pegs.second);
+        min_eliminated = std::min(min_eliminated, num_eliminated);
       }
       if (min_eliminated >= max_min_eliminated) {
         max_min_eliminated = min_eliminated;
