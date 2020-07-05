@@ -4,6 +4,28 @@
 
 #include "code.h"
 
+template <int NUM_DIGITS>
+bool ColorAlreadyUsed(const std::array<int, NUM_DIGITS> &raw_code, int digit, int color) {
+  for (int i = 0; i < digit; i++) if (raw_code[i] == color) return true;
+  return false;
+}
+
+template <int NUM_DIGITS, int NUM_COLORS>
+void RecursiveSetDigit(std::vector<Code<NUM_DIGITS, NUM_COLORS>> &all_codes,
+                       std::array<int, NUM_DIGITS> &raw_code,
+                       int digit) {
+  if (digit == NUM_DIGITS) {
+    all_codes.emplace_back(raw_code);
+  } else {
+    for (int color = 0; color < NUM_COLORS; color++) {
+      if (!ColorAlreadyUsed<NUM_DIGITS>(raw_code, digit, color)) {
+        raw_code[digit] = color;
+        RecursiveSetDigit<NUM_DIGITS, NUM_COLORS>(all_codes, raw_code, digit + 1);
+      }
+    }
+  }
+}
+
 template <int NUM_DIGITS, int NUM_COLORS>
 std::vector<Code<NUM_DIGITS, NUM_COLORS>> GenerateAllCodes(bool allow_repeats = false) {
   std::vector<Code<NUM_DIGITS, NUM_COLORS>> all_codes;
@@ -15,7 +37,9 @@ std::vector<Code<NUM_DIGITS, NUM_COLORS>> GenerateAllCodes(bool allow_repeats = 
       all_codes.push_back(all_codes.back().Next());
     }
   } else {
-    LOG(FATAL) << "Not yet imeplemented!";  // TODO(bpeele) implement
+    if (NUM_COLORS < NUM_DIGITS) LOG(FATAL) << "Bad!";
+    std::array<int, NUM_DIGITS> raw_code;
+    RecursiveSetDigit<NUM_DIGITS, NUM_COLORS>(all_codes, raw_code, 0);
   }
 
   return all_codes;

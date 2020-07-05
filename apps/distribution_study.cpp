@@ -2,20 +2,18 @@
 
 template <int NUM_DIGITS, int NUM_COLORS>
 void RunDistributionStudy(bool allow_repeats) {
-  if (!allow_repeats) LOG(FATAL) << "Not yet supported!";  // TODO(bpeele);
-
   const auto all_solutions = GenerateAllCodes<NUM_DIGITS, NUM_COLORS>(allow_repeats);
 
   int total_guesses = 0;
   std::vector<int> distribution;
 
   for (const auto &solution : all_solutions) {
-    auto solver = Solver<NUM_DIGITS, NUM_COLORS>();  // TODO(bpeele) add reset
+    auto solver = Solver<NUM_DIGITS, NUM_COLORS>(allow_repeats);  // TODO(bpeele) add reset
     int num_guesses = solver.AutomatedGameplay(solution, false);
 
     total_guesses += num_guesses;
 
-    while(distribution.size() < (num_guesses + 1)) distribution.push_back(0);
+    while (distribution.size() < (num_guesses + 1)) distribution.push_back(0);
     distribution[num_guesses]++;
   }
 
@@ -49,6 +47,7 @@ void RunDistributionStudy(bool allow_repeats) {
 
   std::cout << "*" << std::endl;
   std::cout << "*****************************************************************" << std::endl;
+  std::cout << std::endl;
 }
 
 int main() {
@@ -61,8 +60,22 @@ int main() {
 
   {
     constexpr int num_digits = 4;
+    constexpr int num_colors = 6;
+    constexpr bool allow_repeats = false;
+    RunDistributionStudy<num_digits, num_colors>(allow_repeats);
+  }
+
+  {
+    constexpr int num_digits = 4;
     constexpr int num_colors = 8;
     constexpr bool allow_repeats = true;
+    RunDistributionStudy<num_digits, num_colors>(allow_repeats);
+  }
+
+  {
+    constexpr int num_digits = 4;
+    constexpr int num_colors = 8;
+    constexpr bool allow_repeats = false;
     RunDistributionStudy<num_digits, num_colors>(allow_repeats);
   }
 }
