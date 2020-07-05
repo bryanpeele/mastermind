@@ -1,0 +1,2 @@
+add_executable(distribution_study distribution_study.cpp)
+target_link_libraries(distribution_study core solver)
